@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sectest
+  name: sectest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sectest
+  template:
+    metadata:
+      labels:
+        app: sectest
+    spec:
+      hostIPC: true
+      hostPID: true
+      hostNetwork: true
+      containers:
+      - image: wordpress
+        name: wordpress
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+            

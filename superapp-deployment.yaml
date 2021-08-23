@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: superapp
+  name: superapp
+  namespace: shared-services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: superapp
+  template:
+    metadata:
+      labels:
+        app: superapp
+    spec:
+      containers:
+      - image: ubuntu
+        name: ubuntu
+        securityContext:
+          privileged: true
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo hello; sleep 10;done"]
+          

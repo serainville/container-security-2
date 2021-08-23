@@ -2,21 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: sectest
-  name: sectest
+    app: wordpress
+  name: wordpress
+  namespace: prod
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
-      app: sectest
+      app: wordpress
   template:
     metadata:
       labels:
-        app: sectest
+        app: wordpress
     spec:
-      hostIPC: true
-      hostPID: true
-      hostNetwork: true
       containers:
       - image: wordpress
         name: wordpress
@@ -24,4 +22,29 @@ spec:
           privileged: true
           capabilities:
             add: ["SYS_ADMIN"]
-            
+        env:
+        - name: MYSQL_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-prod-mysql
+              key: username
+        - name: MYSQL_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-prod-mysql
+              key: password
+        volumeMounts:
+          - mountPath: /etc/secret
+            name: file-secret
+      volumes:
+      - name: file-secret
+        secret:
+          secretName: backend-system-prod
+          items:
+          - key: username
+            path: username
+            mode: 0600
+          - key: password
+            path: password
+            mode: 0600
+          
